@@ -3,7 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import IngredientForm from './IngredientForm';
 import Search from './Search';
 import IngredientList from './IngredientList';
-import { postIngredient } from '../services/ingredient';
+import { postIngredient, deleteIngredient } from '../services/ingredient';
 
 const Ingredients = React.memo(props => {
   const [ ingredients, setIngredients ] = useState([]);
@@ -21,8 +21,13 @@ const Ingredients = React.memo(props => {
     }]);
   }
 
-  function removeIngredients(id) {
-    setIngredients(prevIngredients => prevIngredients.filter(ing => id !== ing.id));
+  async function removeIngredients(id) {
+    try {
+      await deleteIngredient(id);
+      setIngredients(prevIngredients => prevIngredients.filter(ing => id !== ing.id));
+    } catch (error) {
+      console.log('function removeIngredients(id)', error);
+    }
   }
 
   // useCallback is used to avoid re-declacration of a given function  on each render cycle
