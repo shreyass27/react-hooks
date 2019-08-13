@@ -18,18 +18,20 @@ export async function postIngredient(ingredient) {
         return await response.json();
     } catch (error) {
         console.log('Error postIngredient(ingredient)  func', error);
+        throw Error('API Failure');
     }
 }
 
 export async function deleteIngredient(ingredientId) {
     try {
-        const response = await fetch(`${ingredientsApi}/${ingredientId}.json`, {
+        const response = await fetch(`${ingredientsApi}/${ingredientId}.jsn`, {
             method: 'DELETE'
         });
 
         return await response.json();
     } catch (error) {
         console.log('Error postIngredient(ingredient)  func', error);
+        throw Error('API Failure');
     }
 }
 
@@ -44,5 +46,6 @@ export async function getIngredient(filterStr) {
         return await response.json();
     } catch (error) {
         console.log('Error getIngredient()  func', error);
+        throw Error('API Failure');
     }
 }
