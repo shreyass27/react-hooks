@@ -1,32 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 
 import IngredientForm from './IngredientForm';
 import Search from './Search';
 import IngredientList from './IngredientList';
-import { postIngredient, getIngredient } from '../services/ingredient';
+import { postIngredient } from '../services/ingredient';
 
 const Ingredients = React.memo(props => {
   const [ ingredients, setIngredients ] = useState([]);
 
   useEffect(() => {
-    getIngredients();
-  }, [])
-
-  async function getIngredients() {
-    try {
-      const response = await getIngredient();
-
-      const ingredients = Object.keys(response).map( key => ({
-        id: key,
-        ...response[key]
-      }));
-      
-      setIngredients(ingredients);
-    } catch(error) {
-      console.log('Error in getIngredients func', error);
-
-    }
-  }
+    console.log('RENDERING Ingredients Component', ingredients);
+  })
 
   async function addIngredients(ingredient) {
     const response = await postIngredient(ingredient);
@@ -41,12 +25,17 @@ const Ingredients = React.memo(props => {
     setIngredients(prevIngredients => prevIngredients.filter(ing => id !== ing.id));
   }
 
+  // useCallback is used to avoid re-declacration of a given function  on each render cycle
+  const setFilteredIngs = useCallback(function (ingredients) {
+    setIngredients(ingredients);
+  }, [setIngredients]);
+
   return (
     <div className="App">
-      <IngredientForm addIngredients={addIngredients} />
+      <IngredientForm addIngredients={addIngredients}/>
 
       <section>
-        <Search />
+        <Search  setFilteredIngs={setFilteredIngs}  />
         {/* Need to add list here! */}
         <IngredientList ingredients={ingredients} onRemoveItem={removeIngredients} />
       </section>

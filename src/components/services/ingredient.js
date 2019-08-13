@@ -1,3 +1,10 @@
+export const ingredientArray = function (response) {
+    return Object.keys(response).map(key => ({
+        id: key,
+        ...response[key]
+    }))
+};
+
 export async function postIngredient(ingredient) {
     try {
         const response = await fetch('https://react-hooks-2265b.firebaseio.com/ingredients.json', {
@@ -12,9 +19,10 @@ export async function postIngredient(ingredient) {
     }
 }
 
-export async function getIngredient() {
+export async function getIngredient(filterStr) {
     try {
-        const response = await fetch('https://react-hooks-2265b.firebaseio.com/ingredients.json', {
+        const query = filterStr ? `?orderBy="title"&equalTo="${filterStr}"` : '';
+        const response = await fetch(`https://react-hooks-2265b.firebaseio.com/ingredients.json${query}`, {
             headers: { 'Content-Type': 'application/json' }
         });
 
