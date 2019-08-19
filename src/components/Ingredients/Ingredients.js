@@ -44,6 +44,10 @@ const Ingredients = React.memo(props => {
     }
   }
 
+  function clearError() {
+    setError(null);
+  }
+
   // useCallback is used to avoid re-declacration of a given function  on each render cycle
   const setFilteredIngs = useCallback(function (ingredients) {
     setIngredients(ingredients);
@@ -51,7 +55,7 @@ const Ingredients = React.memo(props => {
 
   return (
     <div className="App">
-      {error && <ErrorModal onClose={() => setError(null)}>{error}</ErrorModal> }
+      {error && <ErrorModal onClose={clearError}>{error}</ErrorModal> }
       <IngredientForm addIngredients={addIngredients} isLoading={isLoading} />
 
       <section>

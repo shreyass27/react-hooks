@@ -15,22 +15,28 @@ export async function postIngredient(ingredient) {
             headers: { 'Content-Type': 'application/json' }
         });
 
-        return await response.json();
+        if (response.ok) {
+            return await response.json();
+        }
+        throw Error('API Failure');
     } catch (error) {
-        console.log('Error postIngredient(ingredient)  func', error);
+        console.log('Error postIngredient(ingredient) func', error);
         throw Error('API Failure');
     }
 }
 
 export async function deleteIngredient(ingredientId) {
     try {
-        const response = await fetch(`${ingredientsApi}/${ingredientId}.jsn`, {
+        const response = await fetch(`${ingredientsApi}/${ingredientId}.json`, {
             method: 'DELETE'
         });
 
-        return await response.json();
+        if (response.ok) {
+            return await response.json();
+        }
+        throw Error('API Failure');
     } catch (error) {
-        console.log('Error postIngredient(ingredient)  func', error);
+        console.log('Error postIngredient(ingredient) func', error);
         throw Error('API Failure');
     }
 }
@@ -43,7 +49,10 @@ export async function getIngredient(filterStr) {
             headers: { 'Content-Type': 'application/json' }
         });
 
-        return await response.json();
+        if (response.ok) {
+            return await response.json();
+        }
+        throw Error('API Failure');
     } catch (error) {
         console.log('Error getIngredient()  func', error);
         throw Error('API Failure');
