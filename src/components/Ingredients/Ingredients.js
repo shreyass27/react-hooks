@@ -5,6 +5,7 @@ import Search from './Search';
 import IngredientList from './IngredientList';
 import { postIngredient, deleteIngredient } from '../services/ingredient';
 import ErrorModal from '../UI/ErrorModal';
+import useHttp from '../../hooks/http.hook';
 
 // Component Using UseState
 export const Ingredients = React.memo(props => {
@@ -68,17 +69,13 @@ export const Ingredients = React.memo(props => {
   );
 });
 
-// Same Component Implementation using useReducer 
-// useReducer Hook usage  
+/////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Same Component Implementation using useReducer and Custom Hook 'useHttp'
 const actionTypes = {
   SET: 'SET',
   ADD: 'ADD',
-  DELETE: 'DELETE',
-  REQ: 'REQ',
-  RES: 'RES',
-  ERR: 'ERR',
-  CLR: 'CLR'
+  DELETE: 'DELETE'
 };
 
 const ingredientReducer = (currentState, action) => {
@@ -93,75 +90,31 @@ const ingredientReducer = (currentState, action) => {
   }
 }
 
-const httpStateReducer = (currentState, action) => {
-  switch (action.type) {
-    case actionTypes.REQ:
-      return {
-        ...currentState,
-        loading: true,
-        error: ''
-      };
-    case actionTypes.RES:
-    case actionTypes.CLR:
-      return {
-        ...currentState,
-        loading: false,
-        error: null
-      };
-    case actionTypes.ERR:
-      return {
-        ...currentState,
-        loading: true,
-        error: action.error
-      };
-    default: return currentState;
-  }
-}
-
 const IngredientsRed = React.memo(props => {
   const [ingredients, dispatch] = useReducer(ingredientReducer, []);
-  const [httpState, dispatchHttp] = useReducer(httpStateReducer, {
-    loading: false,
-    error: null
-  });
+
+
+  const { sendRequest, errorLoader, loader } = useHttp();
+
 
   const addIngredients = useCallback(async (ingredient) => {
-    try {
-      dispatchHttp({ type: actionTypes.REQ });
-      const response = await postIngredient(ingredient);
-      dispatchHttp({ type: actionTypes.RES });
-      dispatch({
-        type: actionTypes.ADD,
-        ingredient: {
-          id: response.name,
-          ...ingredient
-        }
-      });
-    } catch (error) {
-      dispatchHttp({ type: actionTypes.ERR, error: 'Something went wrong' });
-      console.log('function addIngredients(idingredient)', error);
-    }
-  }, [])
+    const response = await sendRequest(postIngredient, 'function removeIngredients(id)', ingredient, 'just ');
+    dispatch({
+      type: actionTypes.ADD,
+      ingredient: {
+        id: response.name,
+        ...ingredient
+      }
+    });
+  }, [sendRequest]);
 
-   const removeIngredients = useCallback(async (id) => {
-    try {
-      dispatchHttp({ type: actionTypes.REQ });
-      await deleteIngredient(id);
-
-      dispatchHttp({ type: actionTypes.RES });
-      dispatch({
-        type: actionTypes.DELETE,
-        id
-      })
-    } catch (error) {
-      dispatchHttp({ type: actionTypes.ERR, error: 'Something went wrong' });
-      console.log('function removeIngredients(id)', error);
-    }
-  }, [])
-
-  const clearError = useCallback(() => {
-    dispatchHttp({ type: actionTypes.CLR });
-  }, [])
+  const removeIngredients = useCallback(async (id) => {
+    await sendRequest(deleteIngredient, 'function removeIngredients(id)', id);
+    dispatch({
+      type: actionTypes.DELETE,
+      id
+    })
+  }, [sendRequest]);
 
   // useCallback is used to avoid re-declacration of a given function  on each render cycle
   const setFilteredIngs = useCallback(function (ingredients) {
@@ -173,8 +126,9 @@ const IngredientsRed = React.memo(props => {
 
   return (
     <div className="App">
-      {httpState.error && <ErrorModal onClose={clearError}>{httpState.error}</ErrorModal>}
-      <IngredientForm addIngredients={addIngredients} isLoading={httpState.loading} />
+      {loader}
+      {errorLoader}
+      <IngredientForm addIngredients={addIngredients} />
 
       <section>
         <Search setFilteredIngs={setFilteredIngs} />
