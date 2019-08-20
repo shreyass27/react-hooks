@@ -125,11 +125,7 @@ const IngredientsRed = React.memo(props => {
     error: null
   });
 
-  useEffect(() => {
-    console.log('RENDERING Ingredients Component', ingredients);
-  })
-
-  async function addIngredients(ingredient) {
+  const addIngredients = useCallback(async (ingredient) => {
     try {
       dispatchHttp({ type: actionTypes.REQ });
       const response = await postIngredient(ingredient);
@@ -145,9 +141,9 @@ const IngredientsRed = React.memo(props => {
       dispatchHttp({ type: actionTypes.ERR, error: 'Something went wrong' });
       console.log('function addIngredients(idingredient)', error);
     }
-  }
+  }, [])
 
-  async function removeIngredients(id) {
+   const removeIngredients = useCallback(async (id) => {
     try {
       dispatchHttp({ type: actionTypes.REQ });
       await deleteIngredient(id);
@@ -161,11 +157,11 @@ const IngredientsRed = React.memo(props => {
       dispatchHttp({ type: actionTypes.ERR, error: 'Something went wrong' });
       console.log('function removeIngredients(id)', error);
     }
-  }
+  }, [])
 
-  function clearError() {
+  const clearError = useCallback(() => {
     dispatchHttp({ type: actionTypes.CLR });
-  }
+  }, [])
 
   // useCallback is used to avoid re-declacration of a given function  on each render cycle
   const setFilteredIngs = useCallback(function (ingredients) {

@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useState, useCallback } from 'react';
 
 import Card from '../UI/Card';
 import './IngredientForm.css';
@@ -12,7 +12,6 @@ const IngredientForm = React.memo(props => {
       title,
       amount
     })
-    // ...
   };
 
   // Using Object for state
@@ -22,15 +21,14 @@ const IngredientForm = React.memo(props => {
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
 
-  function handleUpdate(event) {
+  const handleUpdate = useCallback(event => {
     const { name, value } = event.target;
     if(name === 'amount') {
       setAmount(value);
     } else {
       setTitle(value);
     }
-    // setIngredient(prevIng => ({ ...prevIng, [name]: value }))/;
-  }
+  }, []);
 
   return (
     <Fragment>
